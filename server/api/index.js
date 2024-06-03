@@ -1,11 +1,30 @@
 import express from 'express';
 import mongoose from 'mongoose'
-
-
-mongoose.connect("mongodb+srv://janitha:janitha@mern.v49ujt9.mongodb.net/mern?retryWrites=true&w=majority&appName=mern")
+import dotenv from 'dotenv'
+dotenv.config();
 
 const app = express();
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000!');
-})
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGOURL);
+        console.log('MongoDB connected successfully');
+        app.listen(process.env.PORT, () => {
+            console.log(`Server is running on port ${process.env.PORT}`);
+        });
+
+    } catch (err) {
+        console.error('MongoDB connection error:', err.message);
+    }
+};
+
+connectDB();
+
+
+
+
+
