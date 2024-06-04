@@ -2,19 +2,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { signInStart, signInSuccess, signInFail } from '../redux/user/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 const SignIn = () => {
-
-
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
-    const [loading, setLoading] = useState(false)
+    const { loading, error } = useSelector((state) => state.user);
     const navigate = useNavigate();
-
-
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -28,15 +25,21 @@ const SignIn = () => {
             withCredentials: true
         };
         try {
-            setLoading(true);
-            const save = await axios.post('http://localhost:5555/api/auth/signin', data, config)
+            dispatch(signInStart())
+            const response = await axios.post('http://localhost:5555/api/auth/signin', data, config)
             toast.success('Signed in successfully');
             console.log('Signed in successfully')
-            setLoading(false)
+
+
+            if (response.data.success === false) {
+                dispatch(signInFail(response.data.message));
+                return;
+            }
+            dispatch(signInSuccess(response.data))
 
             navigate('/')
         } catch (error) {
-            setLoading(false)
+            dispatch(signInFail(error.message));
 
             console.log(error);
             // Extracting the error message
