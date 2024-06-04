@@ -5,12 +5,17 @@ import SignIn from './pages/SignIn.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Profile from './pages/Profile.jsx'
 import Header from './components/Header.jsx'
+import { Toaster } from 'react-hot-toast'
 
 
 const App = () => {
   return (
     <BrowserRouter>
       <Header />
+      <Toaster
+        position="bottom-left"
+        reverseOrder={false}
+      />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
