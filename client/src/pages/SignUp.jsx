@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -12,6 +12,7 @@ const SignUp = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
 
 
@@ -26,7 +27,7 @@ const SignUp = () => {
             console.log('Account Created Successfully')
             setLoading(false)
 
-
+            navigate('/sign-in')
         } catch (error) {
             setLoading(false)
             setError(true)
