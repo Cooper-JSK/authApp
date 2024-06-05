@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import OAuth from '../components/OAuth'
 
 
 const SignUp = () => {
@@ -48,6 +49,7 @@ const SignUp = () => {
                 <input type='email' placeholder='Email' id='email' className='bg-slate-100 p-3 rounded-lg' onChange={(e) => setEmail(e.target.value)} />
                 <input type='password' placeholder='Password' id='password' className='bg-slate-100 p-3 rounded-lg' onChange={(e) => setPassword(e.target.value)} />
                 <button disabled={loading} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80' onClick={handleSubmit}>{loading ? 'Loading..' : 'Sign Up'}</button>
+                <OAuth />
             </div>
             <div className='flex gap-2 mt-5'>
                 <p>Have an account?</p>
