@@ -6,6 +6,7 @@ import SignUp from './pages/SignUp.jsx'
 import Profile from './pages/Profile.jsx'
 import Header from './components/Header.jsx'
 import { Toaster } from 'react-hot-toast'
+import PrivateRoute from './components/PrivateRoute.jsx'
 
 
 const App = () => {
@@ -21,7 +22,10 @@ const App = () => {
         <Route path='/about' element={<About />} />
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<SignUp />} />
-        <Route path='/profile' element={<Profile />} />
+        <Route element={<PrivateRoute />}>
+          <Route path='/profile' element={<Profile />} />
+        </Route>
+
       </Routes>
     </BrowserRouter>
   )
