@@ -3,6 +3,9 @@ import { useRef, useState, useEffect } from 'react'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { app } from "../firebase"
 import toast from "react-hot-toast"
+import { useDispatch } from "react-redux"
+import { updateUserStart, updateUserSuccess, updateUserFail } from "../redux/user/userSlice.js"
+import axios from 'axios'
 
 
 const Profile = () => {
@@ -12,6 +15,7 @@ const Profile = () => {
     const [imgLoading, setImgLoading] = useState(0);
     const [formData, setFormData] = useState({});
     const [imageError, setImageError] = useState(undefined);
+    const dispatch = useDispatch();
     console.log(formData)
 
 
@@ -55,15 +59,56 @@ const Profile = () => {
         );
     }
 
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            dispatch(updateUserStart());
+            const res = await fetch(`http://localhost:5555/api/user/update/${currentUser._id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                credentials: 'include', // Make sure this is set to include credentials
+                body: JSON.stringify(formData), // Ensure body is JSON string
+            });
+            const data = await res.json();
+            if (data.success === false) {
+                dispatch(updateUserFail(data));
+                return;
+            }
+            dispatch(updateUserSuccess(data));
+            toast.success("Profile updated successfully!");
+        } catch (error) {
+            dispatch(updateUserFail(error));
+            console.log("Could not connect to server", error);
+            // Extracting the error message
+            const errorMessage = error.response && error.response.data && error.response.data.message
+                ? error.response.data.message
+                : 'An error occurred';
+            toast.error(errorMessage);
+        }
+    };
+
+
 
     return (
         <div className='p-3 max-w-lg mx-auto'>
             <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-            <form className='flex flex-col gap-4'>
-                <input type='file' ref={fileRef} hidden accept='image/*'
+            <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+                <input type='file'
+                    ref={fileRef}
+                    hidden
+                    accept='image/*'
                     onChange={(e) => setImage(e.target.files[0])} />
 
-                <img src={formData.profilePicture || currentUser.profilePicture} alt='profile-picture'
+                <img src={formData.profilePicture || currentUser.profilePicture}
+                    alt='profile-picture'
                     className='h-24 w-24 self-center rounded-full cursor-pointer object-cover'
                     onClick={() => fileRef.current.click()} />
 
@@ -73,14 +118,26 @@ const Profile = () => {
                         <span className='text-slate-700'>{`Uploading Image... ${imgLoading}%`}</span>
                     ) : imgLoading === 100 ? '' : ''}</p>
 
-                <input defaultValue={currentUser.username} type='text' id='username' placeholder='Username'
-                    className='bg-slate-100 rounded-lg p-3' />
+                <input
+                    defaultValue={currentUser.username}
+                    type='text'
+                    id='username'
+                    placeholder='Username'
+                    className='bg-slate-100 rounded-lg p-3'
+                    onChange={handleChange} />
 
-                <input defaultValue={currentUser.email} type='email' id='email' placeholder='Email'
-                    className='bg-slate-100 rounded-lg p-3' />
+                <input
+                    defaultValue={currentUser.email}
+                    type='email' id='email'
+                    placeholder='Email'
+                    className='bg-slate-100 rounded-lg p-3'
+                    onChange={handleChange} />
 
-                <input type='password' id='password' placeholder='Password'
-                    className='bg-slate-100 rounded-lg p-3' />
+                <input type='password'
+                    id='password'
+                    placeholder='Password'
+                    className='bg-slate-100 rounded-lg p-3'
+                    onChange={handleChange} />
 
                 <button className='bg-green-600 text-white rounded-lg p-3 uppercase hover:opacity-85 disabled:opacity-50'>Update</button>
             </form>

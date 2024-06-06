@@ -4,9 +4,11 @@ import { app } from '../firebase.js';
 import axios from 'axios'
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice.js';
+import { useNavigate } from 'react-router-dom'
 
 const OAuth = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const handleGoogle = async () => {
 
         // remember to add this config to axios because otherwise you will not see access_token in you localstorage in browser
@@ -28,6 +30,7 @@ const OAuth = () => {
             const res = await axios.post('http://localhost:5555/api/auth/google', data, config)
             console.log(res.data);
             dispatch(signInSuccess(res.data))
+            navigate('/')
 
         } catch (error) {
             console.log("Could not connect to Google", error);
