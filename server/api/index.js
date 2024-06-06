@@ -1,28 +1,28 @@
 import express from 'express';
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
-import userRoutes from './routes/userRoute.js'
-import authRoutes from './routes/authRoute.js'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import userRoutes from './routes/userRoute.js';
+import authRoutes from './routes/authRoute.js';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
-
 const app = express();
-app.use(express.json())
+
+// Middleware setup
 app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(cookieParser())
-
-app.use('/api/user', userRoutes)
-app.use('/api/auth', authRoutes)
+// Routes
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 
 const connectDB = async () => {
     try {
@@ -31,7 +31,6 @@ const connectDB = async () => {
         app.listen(process.env.PORT, () => {
             console.log(`Server is running on port ${process.env.PORT}`);
         });
-
     } catch (err) {
         console.error('MongoDB connection error:', err.message);
     }
@@ -62,5 +61,3 @@ app.use((err, req, res, next) => {
         statusCode
     });
 });
-
-
